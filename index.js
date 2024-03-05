@@ -1,6 +1,8 @@
 'use strict';
 import axios from 'https://cdn.jsdelivr.net/npm/axios@1.3.5/+esm';
 
+adapter.browserDetails.browser
+
 const DID_API = {
   "old_key": "YXV0aDB8NjVlMWM2Y2IwZGJjZGYwZGZmMThlY2EwOlVUTDJWX2RrekktVXVVYjE5TXBCdg==",
   "key": "ZmFrZV9lcmFAbWFpbC5ydQ:wq9uULBXrCIdM5VwiIje1",
@@ -151,7 +153,7 @@ async function fetchAIResponse() {
     'session_id': sessionId,
     // audio_optimization: '2',
   }
-  const talkResponse = await api.post(`/talks/streams/${streamId}`, payload)
+  await api.post(`/talks/streams/${streamId}`, payload)
 }
 
 const RTCPeerConnection = (
@@ -191,7 +193,7 @@ recordButton.onmousedown = () => {
   startRecord()
 }
 recordButton.onmouseup = async () => {
-  if (rec.state === 'recording') {
+  if (rec && rec.state === 'recording') {
     rec.stop();
     rec.stream.getTracks().forEach(i => i.stop())
   }
@@ -200,7 +202,7 @@ recordButton.addEventListener('pointerdown', () => {
   startRecord()
 })
 recordButton.addEventListener('pointerup', () => {
-  if (rec.state === 'recording') {
+  if (rec && rec.state === 'recording') {
     rec.stop();
     rec.stream.getTracks().forEach(i => i.stop())
   }
@@ -442,13 +444,14 @@ function onVideoStatusChange(videoIsPlaying, stream) {
 }
 
 function onTrack(event) {
+  if (!peerConnection) return;
+  if (!event || event && !event.track) return;
   console.log('onTrack', event);
-  if (!event.track) return;
 
   statsIntervalId = setInterval(async () => {
     const stats = await peerConnection.getStats(event.track);
     stats.forEach((report) => {
-      if (report.type === 'inbound-rtp' && report.mediaType === 'video') {
+      if (report.type === 'inbound-rtp' && (report.mediaType === 'video' || report.kind === 'video')) {
         const videoStatusChanged = videoIsPlaying !== report.bytesReceived > lastBytesReceived;
 
         if (videoStatusChanged) {
@@ -489,6 +492,7 @@ function setVideoElement(stream) {
   talkVideo.style.opacity = 0;
   resVideo.style.opacity = 1;
   resVideo.srcObject = stream;
+  console.log('streaming now')
 
   // safari hotfix
   if (resVideo.paused) {
@@ -500,6 +504,7 @@ function setVideoElement(stream) {
 }
 
 function playIdleVideo() {
+  resVideo.style.opacity = 0;
   talkVideo.style.opacity = 1;
   if (talkVideo.paused) {
     talkVideo
