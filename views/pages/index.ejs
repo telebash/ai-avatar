@@ -106,6 +106,10 @@
         transition: opacity .2s ease-in-out;
       }
 
+      #record:active {
+        background-color: rgba(195, 0, 16, 0.75);
+      }
+
       #talk-video {
         position: absolute;
         width: 600px;
@@ -190,6 +194,8 @@
       }
 
       *:not(input):not(textarea) {
+        user-select: none;
+        touch-action: none;
         -webkit-user-select: none; /* disable selection/Copy of UIWebView */
         -webkit-touch-callout: none; /* disable the IOS popup when long-press on a link */
       }
@@ -198,7 +204,6 @@
 
   <body>
     <div id="content">
-      <audio controls id="audioPlayer" style="display: none;"></audio>
       <div id="video-wrapper">
         <div class="video-container">
           <video style="opacity: 0" id="res-video" src="<%= idle_video  %>" width="600" height="600" autoplay playsinline></video>
@@ -206,7 +211,8 @@
         </div>
       </div>
       <br />
-
+      <div id="rec-status"></div>
+      <br />
       <div id="buttons">
           <button id="record" type="button" style="margin: auto; width: 144px; height: 144px; background-color: #c30010; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
             <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="48px" height="48px" viewBox="0,0,256,256"><g fill="#ffffff" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" font-family="none" font-weight="none" font-size="none" text-anchor="none" style="mix-blend-mode: normal"><g transform="scale(10.66667,10.66667)"><path d="M12,2c-1.657,0 -3,1.343 -3,3v6c0,1.657 1.343,3 3,3c1.657,0 3,-1.343 3,-3v-6c0,-1.657 -1.343,-3 -3,-3zM5,11c0,3.5253 2.60936,6.43323 6,6.91992v3.08008h2v-3.08008c3.39064,-0.4867 6,-3.39463 6,-6.91992h-2c0,2.761 -2.239,5 -5,5c-2.761,0 -5,-2.239 -5,-5z"></path></g></g></svg>
@@ -221,6 +227,7 @@
         Signaling status: <label id="signaling-status-label"></label><br />
         Streaming status: <label id="streaming-status-label"></label><br />
       </div>
+      <audio controls id="audioPlayer" style="display: none;"></audio>
     </div>
     <input style="display: none;" type="file" accept="audio/*;capture=microphone">
     <script>

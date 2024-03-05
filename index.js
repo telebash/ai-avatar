@@ -179,6 +179,7 @@ let lastBytesReceived;
 let inputText;
 let rec;
 
+const recStatus = document.getElementById('rec-status');
 const talkVideo = document.getElementById('talk-video');
 const resVideo = document.getElementById('res-video');
 const peerStatusLabel = document.getElementById('peer-status-label');
@@ -190,25 +191,30 @@ const audioPlayer = document.getElementById('audioPlayer');
 
 const recordButton = document.getElementById('record');
 recordButton.onmousedown = () => {
+  recStatus.innerText = 'Start record';
   startRecord()
 }
 recordButton.onmouseup = async () => {
   if (rec && rec.state === 'recording') {
+    recStatus.innerText = '';
     rec.stop();
     rec.stream.getTracks().forEach(i => i.stop())
   }
 }
 recordButton.addEventListener('pointerdown', () => {
+  recStatus.innerText = 'Start record';
   startRecord()
 })
 recordButton.addEventListener('pointerup', () => {
   if (rec && rec.state === 'recording') {
+    recStatus.innerText = '';
     rec.stop();
     rec.stream.getTracks().forEach(i => i.stop())
   }
 })
 
 const startRecord = async () => {
+  const startTime = new Date().getTime()
   const audioChunks = [];
 
   if (navigator.mediaDevices === undefined) {
@@ -244,6 +250,12 @@ const startRecord = async () => {
     };
 
     rec.onstop = async () => {
+      const duration = new Date().getTime() - startTime;
+      console.log(duration);
+      if (duration < 1000) {
+        recStatus.innerText = 'Audio is small'
+        return;
+      }
       const fileName = `audio-${new Date().toISOString()}.wav`
       const blob = new Blob(audioChunks, { type: "audio/wav" });
       const audioUrl = URL.createObjectURL(blob);
