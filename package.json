@@ -1,0 +1,22 @@
+{
+  "type": "module",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon -L app.js"
+  },
+  "dependencies": {
+    "audio-recorder-polyfill": "^0.4.1",
+    "aws-sdk": "^2.1569.0",
+    "axios": "^1.6.7",
+    "dotenv": "^16.4.5",
+    "ejs": "^3.1.9",
+    "express": "^4.18.3",
+    "multer": "^1.4.5-lts.1",
+    "nodemon": "^3.1.0",
+    "openai": "^4.28.4",
+    "replicate": "^0.27.1"
+  },
+  "devDependencies": {
+    "@gradio/client": "^0.12.1"
+  }
+}

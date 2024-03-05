@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>AI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Mulish:wght@300;400;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      video::-webkit-media-controls {
+        display: none;
+      }
+      #user-input-field {
+        width: 80%;
+        padding: 8px;
+        box-sizing: border-box;
+        margin: 0 auto;
+        display: block;
+      }
+      body {
+        background-color: #121212;
+        color: #ffffff;
+        font-family: 'Mulish', sans-serif;
+      }
+      .peerConnectionState-new {
+        color: cornflowerblue;
+      }
+      .peerConnectionState-connecting {
+        color: orange;
+      }
+      .peerConnectionState-connected {
+        color: green;
+      }
+      .peerConnectionState-disconnected,
+      .peerConnectionState-closed,
+      .peerConnectionState-failed {
+        color: red;
+      }
+
+      .iceConnectionState-new {
+        color: cornflowerblue;
+      }
+      .iceConnectionState-checking {
+        color: orange;
+      }
+      .iceConnectionState-connected,
+      .iceConnectionState-completed {
+        color: green;
+      }
+      .peerConnectionState-disconnected,
+      .peerConnectionState-closed,
+      .peerConnectionState-failed {
+        color: red;
+      }
+
+      .iceGatheringState-new {
+        color: cornflowerblue;
+      }
+      .iceGatheringState-gathering {
+        color: orange;
+      }
+      .iceGatheringState-complete {
+        color: black;
+      }
+
+      .signalingState-stable {
+        color: green;
+      }
+      .signalingState-have-local-offer,
+      .signalingState-have-remote-offer,
+      .signalingState-have-local-pranswer,
+      .signalingState-have-remote-pranswer {
+        color: cornflowerblue;
+      }
+      .signalingState-closed {
+        color: red;
+      }
+
+      .streamingState-streaming {
+        color: green;
+      }
+
+      .streamingState-empty {
+        color: grey;
+      }
+
+      .video-container {
+        width: 600px;
+        height: 600px;
+        border-radius: 50%;
+        overflow: hidden;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      #res-video {
+        position: absolute;
+        width: 600px;
+        height: 600px;
+        border-radius: 50%;
+        background-color: #000;
+        -webkit-transition: opacity .2s ease-in-out;
+        transition: opacity .2s ease-in-out;
+      }
+
+      #talk-video {
+        position: absolute;
+        width: 600px;
+        height: 600px;
+        border-radius: 50%;
+        background-color: #000;
+        -webkit-transition: opacity .2s ease-in-out;
+        transition: opacity .2s ease-in-out;
+      }
+
+      body * {
+        font-family: 'Mulish', sans-serif;
+        text-align: center;
+      }
+
+      #content {
+        width: 820px;
+        position: relative;
+        margin: 0 auto;
+      }
+
+      #buttons {
+        clear: both;
+        padding: 0 0 0 0;
+        text-align: center;
+      }
+
+      button {
+        border: none;
+      /*  font-size: 16px;*/
+      /*  margin: 0 5px;*/
+      /*  background-color: #7459fe;*/
+      /*  color: #fff;*/
+      }
+
+      button:hover {
+        background-color: #9480ff;
+        cursor: pointer;
+        transition: all 0.2s ease-out;
+      }
+
+      #status {
+        clear: both;
+        padding: 20px 0 0 0;
+        text-align: left;
+        display: inline-block;
+        zoom: 1;
+        line-height: 140%;
+        font-size: 15px;
+      }
+
+      #status div {
+        padding-bottom: 10px;
+      }
+
+      #video-wrapper {
+        background: url(bg.png);
+        height: 600px;
+        background-position: top;
+      }
+
+      #video-wrapper div {
+        width: 600px;
+        margin: 0 auto;
+      }
+      video {
+        display: block;
+        border-radius: 60%;
+        background-color: #000;
+        transform: scale(.80);
+        transition: transform 0.3s ease;
+      }
+
+      #input-container label {
+        margin-left: 5px;
+        cursor: pointer;
+        color: #ffffff;
+      }
+
+      #input-container input[type="checkbox"] {
+        cursor: pointer;
+      }
+
+      *:not(input):not(textarea) {
+        -webkit-user-select: none; /* disable selection/Copy of UIWebView */
+        -webkit-touch-callout: none; /* disable the IOS popup when long-press on a link */
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="content">
+      <audio controls id="audioPlayer" style="display: none;"></audio>
+      <div id="video-wrapper">
+        <div class="video-container">
+          <video style="opacity: 0" id="res-video" src="<%= idle_video  %>" width="600" height="600" autoplay playsinline></video>
+          <video style="opacity: 1" id="talk-video" src="<%= idle_video  %>" width="600" height="600" autoplay playsinline muted></video>
+        </div>
+      </div>
+      <br />
+
+      <div id="buttons">
+          <button id="record" type="button" style="margin: auto; width: 144px; height: 144px; background-color: #c30010; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+            <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="48px" height="48px" viewBox="0,0,256,256"><g fill="#ffffff" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" font-family="none" font-weight="none" font-size="none" text-anchor="none" style="mix-blend-mode: normal"><g transform="scale(10.66667,10.66667)"><path d="M12,2c-1.657,0 -3,1.343 -3,3v6c0,1.657 1.343,3 3,3c1.657,0 3,-1.343 3,-3v-6c0,-1.657 -1.343,-3 -3,-3zM5,11c0,3.5253 2.60936,6.43323 6,6.91992v3.08008h2v-3.08008c3.39064,-0.4867 6,-3.39463 6,-6.91992h-2c0,2.761 -2.239,5 -5,5c-2.761,0 -5,-2.239 -5,-5z"></path></g></g></svg>
+          </button>
+      </div>
+
+      <div id="status" style="opacity: 1;">
+        ICE gathering status: <label id="ice-gathering-status-label"></label
+        ><br />
+        ICE status: <label id="ice-status-label"></label><br />
+        Peer connection status: <label id="peer-status-label"></label><br />
+        Signaling status: <label id="signaling-status-label"></label><br />
+        Streaming status: <label id="streaming-status-label"></label><br />
+      </div>
+    </div>
+    <input style="display: none;" type="file" accept="audio/*;capture=microphone">
+    <script>
+        var idle_video = "<%= idle_video %>";
+        var source_url = "<%= source_url  %>";
+    </script>
+    <script type="module" src="/static/index.js"></script>
+  </body>
+</html>
